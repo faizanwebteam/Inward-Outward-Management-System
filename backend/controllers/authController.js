@@ -18,7 +18,7 @@ export const registerUser = async (req, res) => {
       name: user.name,
       email: user.email,
       role: user.role,
-//      token: generateToken(user._id, user.role),
+      token: generateToken(user._id, user.role),
     });
   } catch (err) {
     res.status(500).json({ message: err.message });
