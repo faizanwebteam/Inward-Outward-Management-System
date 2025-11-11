@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import morgan from "morgan";
 import connectDB from "./config/db.js";
+import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
 import { setupSwagger } from "./config/swagger.js"; // 👈 Import Swagger setup
 
 // Import Routes
@@ -13,7 +14,9 @@ import supplierRoutes from "./routes/supplierRoutes.js";
 import customerRoutes from "./routes/customerRoutes.js";
 import lotRoutes from "./routes/lotRoutes.js";
 import boxRoutes from "./routes/boxRoutes.js";
-
+import challanRoutes from "./routes/challanRoutes.js";
+import invoiceRoutes from "./routes/invoiceRoutes.js";
+import billRoutes from "./routes/billRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -37,7 +40,15 @@ app.use("/api/supplier", supplierRoutes);
 app.use("/api/customer", customerRoutes);
 app.use("/api/lots", lotRoutes);
 app.use("/api/boxes", boxRoutes);
+app.use("/api/challans", challanRoutes);
+app.use("/api/invoices", invoiceRoutes);
+app.use("/api/bills", billRoutes);
+
+// Error Handling Middleware
+app.use(notFound);
+app.use(errorHandler);
 
 // Start Server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
+console.log(`📄 Swagger Docs: http://localhost:${PORT}/api-docs`);

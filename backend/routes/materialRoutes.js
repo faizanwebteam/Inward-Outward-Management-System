@@ -6,6 +6,7 @@ import {
   updateMaterial,
   deleteMaterial,
 } from "../controllers/materialController.js";
+import { authorizeRoles } from "../middleware/authorizeRoles.js";
 import { protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
@@ -111,12 +112,12 @@ const router = express.Router();
  */
 
 router.route("/")
-  .post(protect, createMaterial)
+  .post(protect, authorizeRoles("company"), createMaterial)
   .get(protect, getMaterials);
 
 router.route("/:id")
   .get(protect, getMaterialById)
-  .put(protect, updateMaterial)
-  .delete(protect, deleteMaterial);
+  .put(protect, authorizeRoles("company"), updateMaterial)
+  .delete(protect, authorizeRoles("company"), deleteMaterial);
 
 export default router;

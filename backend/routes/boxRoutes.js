@@ -1,6 +1,7 @@
 import express from "express";
 import { protect } from "../middleware/authMiddleware.js";
 import { createBox, getBoxes, getBoxById, updateBox, deleteBox } from "../controllers/boxController.js";
+import { authorizeRoles } from "../middleware/authorizeRoles.js";
 
 const router = express.Router();
 
@@ -191,7 +192,11 @@ const router = express.Router();
  *                   example: Box removed
  */
 
-router.route("/").get(protect, getBoxes).post(protect, createBox);
-router.route("/:id").get(protect, getBoxById).put(protect, updateBox).delete(protect, deleteBox);
+router.route("/").get(protect, getBoxes).post(protect, authorizeRoles("company"), createBox);
+router
+  .route("/:id")
+  .get(protect, getBoxById)
+  .put(protect, authorizeRoles("company"), updateBox)
+  .delete(protect, authorizeRoles("company"), deleteBox);
 
 export default router;

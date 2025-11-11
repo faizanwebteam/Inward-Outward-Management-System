@@ -1,6 +1,7 @@
 import express from "express";
 import { protect } from "../middleware/authMiddleware.js";
 import { createLot, getLots, getLotById, updateLot, deleteLot } from "../controllers/lotController.js";
+import { authorizeRoles } from "../middleware/authorizeRoles.js";
 
 const router = express.Router();
 
@@ -107,7 +108,11 @@ const router = express.Router();
  *         description: Lot deleted successfully
  */
 
-router.route("/").get(protect, getLots).post(protect, createLot);
-router.route("/:id").get(protect, getLotById).put(protect, updateLot).delete(protect, deleteLot);
+router.route("/").get(protect, getLots).post(protect, authorizeRoles("company"), createLot);
+router
+  .route("/:id")
+  .get(protect, getLotById)
+  .put(protect, authorizeRoles("company"), updateLot)
+  .delete(protect, authorizeRoles("company"), deleteLot);
 
 export default router;
