@@ -6,7 +6,7 @@ import Challan from "../models/challanModel.js";
 // @route   POST /api/bills
 // @access  Company
 export const createBill = asyncHandler(async (req, res) => {
-  const { billNumber, supplier, challan, items, totalAmount, status } = req.body;
+  const { billNumber, supplier, challan, items, status } = req.body;
 
   // Validate challan exists
   const challanExists = await Challan.findById(challan);
@@ -15,13 +15,23 @@ export const createBill = asyncHandler(async (req, res) => {
     throw new Error("Challan not found");
   }
 
+  // --- Server-side calculation ---
+  let calculatedTotal = 0;
+  for (const item of items) {
+    const itemTotal =
+      (item.quantity || 0) * (item.materialRate || 0) +
+      (item.plasticQuantity || 0) * (item.plasticRate || 0);
+    calculatedTotal += itemTotal;
+  }
+  // --- End calculation ---
+
   const bill = await Bill.create({
     billNumber,
     supplier,
     company: req.user._id,
     challan,
     items,
-    totalAmount,
+    totalAmount: calculatedTotal, // Use the server-calculated total
     status,
   });
 

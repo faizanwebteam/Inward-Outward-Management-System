@@ -7,6 +7,7 @@ import {
   deleteSupplier,
 } from "../controllers/supplierController.js";
 import { protect } from "../middleware/authMiddleware.js";
+import { authorizeRoles } from "../middleware/authorizeRoles.js";
 
 const router = express.Router();
 
@@ -126,12 +127,12 @@ const router = express.Router();
  *         description: Supplier deleted successfully
  */
 
-router.route("/").get(protect, getSuppliers).post(protect, createSupplier);
+router.route("/").get(protect, getSuppliers).post(protect, authorizeRoles("company"), createSupplier);
 
 router
   .route("/:id")
   .get(protect, getSupplierById)
-  .put(protect, updateSupplier)
-  .delete(protect, deleteSupplier);
+  .put(protect, authorizeRoles("company"), updateSupplier)
+  .delete(protect, authorizeRoles("company"), deleteSupplier);
 
 export default router;

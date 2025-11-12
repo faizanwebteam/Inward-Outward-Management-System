@@ -7,6 +7,7 @@ import {
   deleteCompany,
 } from "../controllers/companyController.js";
 import { protect } from "../middleware/authMiddleware.js";
+import { authorizeRoles } from "../middleware/authorizeRoles.js";
 
 const router = express.Router();
 
@@ -56,7 +57,7 @@ const router = express.Router();
  *       201:
  *         description: Company created
  */
-router.route("/").get(protect, getCompanies).post(protect, createCompany);
+router.route("/").get(protect, getCompanies).post(protect, authorizeRoles("company"), createCompany);
 
 /**
  * @swagger
@@ -112,7 +113,7 @@ router.route("/").get(protect, getCompanies).post(protect, createCompany);
 router
   .route("/:id")
   .get(protect, getCompanyById)
-  .put(protect, updateCompany)
-  .delete(protect, deleteCompany);
+  .put(protect, authorizeRoles("company"), updateCompany)
+  .delete(protect, authorizeRoles("company"), deleteCompany);
 
 export default router;

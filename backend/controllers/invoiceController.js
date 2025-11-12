@@ -45,7 +45,15 @@ export const createInvoice = asyncHandler(async (req, res) => {
 // @route   GET /api/invoices
 // @access  Company / Customer
 export const getInvoices = asyncHandler(async (req, res) => {
-  const invoices = await Invoice.find().populate("customer company challan items.box");
+  const query = {};
+  // If the user is a customer, only show invoices related to them.
+  if (req.user.role === "customer") {
+    query.customer = req.user._id;
+  }
+
+  const invoices = await Invoice.find(query)
+    .populate("customer company challan items.box")
+    .sort({ createdAt: -1 });
   res.json(invoices);
 });
 
@@ -54,8 +62,17 @@ export const getInvoices = asyncHandler(async (req, res) => {
 // @access  Company / Customer
 export const getInvoiceById = asyncHandler(async (req, res) => {
   const invoice = await Invoice.findById(req.params.id).populate("customer company challan items.box");
-  if (invoice) res.json(invoice);
-  else res.status(404).json({ message: "Invoice not found" });
+  if (invoice) {
+    // Security check: Ensure customer can only access their own invoice
+    if (req.user.role === "customer" && invoice.customer.toString() !== req.user._id.toString()) {
+      res.status(403);
+      throw new Error("Not authorized to view this invoice");
+    }
+    res.json(invoice);
+  } else {
+    res.status(404);
+    throw new Error("Invoice not found");
+  }
 });
 
 // @desc    Update invoice
@@ -63,13 +80,13 @@ export const getInvoiceById = asyncHandler(async (req, res) => {
 // @access  Company
 export const updateInvoice = asyncHandler(async (req, res) => {
   const invoice = await Invoice.findById(req.params.id);
-  if (invoice) {
-    Object.assign(invoice, req.body);
-    const updatedInvoice = await invoice.save();
-    res.json(updatedInvoice);
-  } else {
-    res.status(404).json({ message: "Invoice not found" });
+  if (!invoice) {
+    res.status(404);
+    throw new Error("Invoice not found");
   }
+  Object.assign(invoice, req.body);
+  const updatedInvoice = await invoice.save();
+  res.json(updatedInvoice);
 });
 
 // @desc    Delete invoice
@@ -77,10 +94,10 @@ export const updateInvoice = asyncHandler(async (req, res) => {
 // @access  Company
 export const deleteInvoice = asyncHandler(async (req, res) => {
   const invoice = await Invoice.findById(req.params.id);
-  if (invoice) {
-    await invoice.remove();
-    res.json({ message: "Invoice removed" });
-  } else {
-    res.status(404).json({ message: "Invoice not found" });
+  if (!invoice) {
+    res.status(404);
+    throw new Error("Invoice not found");
   }
+  await invoice.remove();
+  res.json({ message: "Invoice removed" });
 });

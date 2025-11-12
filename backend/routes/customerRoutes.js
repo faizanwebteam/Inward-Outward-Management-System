@@ -7,6 +7,7 @@ import {
   deleteCustomer,
 } from "../controllers/customerController.js";
 import { protect } from "../middleware/authMiddleware.js";
+import { authorizeRoles } from "../middleware/authorizeRoles.js";
 
 const router = express.Router();
 
@@ -126,12 +127,12 @@ const router = express.Router();
  *         description: Customer deleted successfully
  */
 
-router.route("/").get(protect, getCustomers).post(protect, createCustomer);
+router.route("/").get(protect, getCustomers).post(protect, authorizeRoles("company"), createCustomer);
 
 router
   .route("/:id")
   .get(protect, getCustomerById)
-  .put(protect, updateCustomer)
-  .delete(protect, deleteCustomer);
+  .put(protect, authorizeRoles("company"), updateCustomer)
+  .delete(protect, authorizeRoles("company"), deleteCustomer);
 
 export default router;

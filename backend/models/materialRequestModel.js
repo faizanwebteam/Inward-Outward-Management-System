@@ -7,8 +7,9 @@ const materialRequestSchema = mongoose.Schema(
     supplier: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     items: [
       {
-        material: { type: mongoose.Schema.Types.ObjectId, ref: "Material", required: true },
-        requestedQuantity: { type: Number, required: true },
+        materialId: { type: mongoose.Schema.Types.ObjectId, ref: "Material", required: true },
+        quantity: { type: Number, required: true },
+        unit: { type: String, enum: ["kg", "unit"] },
       },
     ],
     status: {

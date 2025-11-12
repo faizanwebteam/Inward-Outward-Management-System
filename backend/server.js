@@ -17,6 +17,7 @@ import boxRoutes from "./routes/boxRoutes.js";
 import challanRoutes from "./routes/challanRoutes.js";
 import invoiceRoutes from "./routes/invoiceRoutes.js";
 import billRoutes from "./routes/billRoutes.js";
+import materialRequestRoutes from "./routes/materialRequestRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -43,6 +44,7 @@ app.use("/api/boxes", boxRoutes);
 app.use("/api/challans", challanRoutes);
 app.use("/api/invoices", invoiceRoutes);
 app.use("/api/bills", billRoutes);
+app.use("/api/material-requests", materialRequestRoutes);
 
 // Error Handling Middleware
 app.use(notFound);
