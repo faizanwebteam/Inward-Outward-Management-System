@@ -98,7 +98,7 @@ export const getMaterialRequestById = asyncHandler(async (req, res) => {
  * @access  Supplier
  */
 export const respondToMaterialRequest = asyncHandler(async (req, res) => {
-  const { status, supplierNotes, dispatchDate } = req.body;
+  const { status, supplierNotes, dispatchDate, items: updatedItems } = req.body;
 
   const request = await MaterialRequest.findById(req.params.id);
 
@@ -122,6 +122,21 @@ export const respondToMaterialRequest = asyncHandler(async (req, res) => {
   request.status = status || request.status;
   request.supplierNotes = supplierNotes || request.supplierNotes;
   request.dispatchDate = dispatchDate || request.dispatchDate;
+
+  // If supplier provides updated item quantities, update them in the request
+  if (updatedItems && Array.isArray(updatedItems)) {
+    updatedItems.forEach(updatedItem => {
+      const itemToUpdate = request.items.find(
+        i => i.materialId.toString() === updatedItem.materialId
+      );
+      if (itemToUpdate) {
+        // Update the quantity that the supplier has confirmed
+        itemToUpdate.quantity = updatedItem.quantity ?? itemToUpdate.quantity;
+        // You could add more fields here like 'dispatchedQuantity' if needed
+      }
+    });
+  }
+
 
   const updatedRequest = await request.save();
 

@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
 const challanSchema = mongoose.Schema(
+  // No changes needed here, schema is correct.
   {
     challanNumber: { type: String, required: true, unique: true },
     supplier: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },

@@ -68,7 +68,8 @@ export const getBillById = asyncHandler(async (req, res) => {
     }
     res.json(bill);
   } else {
-    res.status(404).json({ message: "Bill not found" });
+    res.status(404);
+    throw new Error("Bill not found");
   }
 });
 
@@ -77,13 +78,13 @@ export const getBillById = asyncHandler(async (req, res) => {
 // @access  Company
 export const updateBill = asyncHandler(async (req, res) => {
   const bill = await Bill.findById(req.params.id);
-  if (bill) {
-    Object.assign(bill, req.body);
-    const updatedBill = await bill.save();
-    res.json(updatedBill);
-  } else {
-    res.status(404).json({ message: "Bill not found" });
+  if (!bill) {
+    res.status(404);
+    throw new Error("Bill not found");
   }
+  Object.assign(bill, req.body);
+  const updatedBill = await bill.save();
+  res.json(updatedBill);
 });
 
 // @desc    Delete bill
@@ -91,10 +92,10 @@ export const updateBill = asyncHandler(async (req, res) => {
 // @access  Company
 export const deleteBill = asyncHandler(async (req, res) => {
   const bill = await Bill.findById(req.params.id);
-  if (bill) {
-    await bill.remove();
-    res.json({ message: "Bill removed" });
-  } else {
-    res.status(404).json({ message: "Bill not found" });
+  if (!bill) {
+    res.status(404);
+    throw new Error("Bill not found");
   }
+  await bill.remove();
+  res.json({ message: "Bill removed" });
 });
