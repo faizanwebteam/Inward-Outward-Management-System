@@ -73,6 +73,6 @@ export const deleteBox = asyncHandler(async (req, res) => {
     res.status(404);
     throw new Error("Box not found");
   }
-  await box.remove();
+  await box.deleteOne();
   res.json({ message: "Box removed" });
 });

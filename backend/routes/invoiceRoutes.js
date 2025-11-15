@@ -28,6 +28,18 @@ const router = express.Router();
  *     responses:
  *       200:
  *         description: List of invoices
+ *         content:
+ *           application/json:
+ *             example:
+ *               count: 1
+ *               data:
+ *                 - _id: "67123abc89de90123456"
+ *                   invoiceNumber: "1"
+ *                   customerId: "6912d99fa9ded05bc9adfac7"
+ *                   challanId: "6915d34fe5bacb09abbc262c"
+ *                   totalAmount: 2000
+ *                   status: "pending"
+ *
  *   post:
  *     summary: Create a new invoice
  *     tags: [Invoices]
@@ -41,23 +53,22 @@ const router = express.Router();
  *             type: object
  *             required:
  *               - invoiceNumber
- *               - customer
- *               - challan
+ *               - customerId
+ *               - challanId
  *               - items
- *               - totalAmount
  *             properties:
  *               invoiceNumber:
  *                 type: string
- *               customer:
+ *               customerId:
  *                 type: string
- *               challan:
+ *               challanId:
  *                 type: string
  *               items:
  *                 type: array
  *                 items:
  *                   type: object
  *                   properties:
- *                     box:
+ *                     boxId:
  *                       type: string
  *                     quantity:
  *                       type: number
@@ -72,6 +83,20 @@ const router = express.Router();
  *               status:
  *                 type: string
  *                 example: "pending"
+ *     responses:
+ *       201:
+ *         description: Invoice created successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Invoice created successfully"
+ *               data:
+ *                 _id: "67123abc89de90123456"
+ *                 invoiceNumber: "1"
+ *                 customerId: "6912d99fa9ded05bc9adfac7"
+ *                 challanId: "6915d34fe5bacb09abbc262c"
+ *                 totalAmount: 2000
+ *                 status: "pending"
  */
 
 /**
@@ -85,22 +110,98 @@ const router = express.Router();
  *     parameters:
  *       - in: path
  *         name: id
+ *         description: Invoice ID
  *         required: true
  *         schema:
  *           type: string
+ *     responses:
+ *       200:
+ *         description: Invoice details
+ *         content:
+ *           application/json:
+ *             example:
+ *               _id: "67123abc89de90123456"
+ *               invoiceNumber: "1"
+ *               customerId: "6912d99fa9ded05bc9adfac7"
+ *               challanId: "6915d34fe5bacb09abbc262c"
+ *               totalAmount: 2000
+ *               status: "pending"
+ *       404:
+ *         description: Invoice not found
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Invoice not found"
+ *
  *   put:
  *     summary: Update invoice by ID
  *     tags: [Invoices]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         description: Invoice ID
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               status:
+ *                 type: string
+ *                 example: "paid"
+ *     responses:
+ *       200:
+ *         description: Invoice updated successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Invoice updated successfully"
+ *               data:
+ *                 _id: "67123abc89de90123456"
+ *                 status: "paid"
+ *
  *   delete:
  *     summary: Delete invoice by ID
  *     tags: [Invoices]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         description: Invoice ID to delete
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Invoice removed successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Invoice removed"
+ *       404:
+ *         description: Invoice not found
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Invoice not found"
  */
 
-router.route("/").get(protect, getInvoices).post(protect, createInvoice);
-router.route("/:id").get(protect, getInvoiceById).put(protect, updateInvoice).delete(protect, deleteInvoice);
+router
+  .route("/")
+  .get(protect, getInvoices)
+  .post(protect, createInvoice);
+
+router
+  .route("/:id")
+  .get(protect, getInvoiceById)
+  .put(protect, updateInvoice)
+  .delete(protect, deleteInvoice);
 
 export default router;

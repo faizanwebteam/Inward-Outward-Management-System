@@ -76,6 +76,6 @@ export const deleteCustomer = asyncHandler(async (req, res) => {
     res.status(404);
     throw new Error("Customer not found");
   }
-  await customer.remove();
-  res.json({ message: "Customer removed" });
+  await customer.deleteOne();
+  res.json({ message: "Customer removed successfully" });
 });

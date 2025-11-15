@@ -76,6 +76,6 @@ export const deleteSupplier = asyncHandler(async (req, res) => {
     res.status(404);
     throw new Error("Supplier not found");
   }
-  await supplier.remove();
-  res.json({ message: "Supplier removed" });
+  await supplier.deleteOne();
+  res.json({ message: "Supplier removed successfully" });
 });

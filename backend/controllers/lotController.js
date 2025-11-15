@@ -73,6 +73,6 @@ export const deleteLot = asyncHandler(async (req, res) => {
     res.status(404);
     throw new Error("Lot not found");
   }
-  await lot.remove();
-  res.json({ message: "Lot removed" });
+  await lot.deleteOne();
+  res.json({ message: "Lot removed successfully" });
 });

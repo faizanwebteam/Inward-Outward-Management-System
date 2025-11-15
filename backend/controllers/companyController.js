@@ -83,6 +83,6 @@ export const deleteCompany = asyncHandler(async (req, res) => {
     throw new Error("Company not found");
   }
 
-  await company.remove();
-  res.json({ message: "Company removed" });
+  await company.deleteOne();
+  res.json({ message: "Company removed successfully" });
 });
